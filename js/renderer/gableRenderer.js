@@ -12,6 +12,8 @@ const height = 320
 
 svg.setAttribute("viewBox", `0 0 ${width} ${height}`)
 
+drawGrid(svg, width, height)
+
 /* MARGINS */
 
 const marginTop = 40
@@ -114,5 +116,45 @@ peakLabel.setAttribute("fill","#e6e6e6")
 peakLabel.textContent = formatToField(peakHeight)
 
 svg.appendChild(peakLabel)
+
+function drawGrid(svg, width, height, spacing = 50){
+
+  const gridGroup = document.createElementNS("http://www.w3.org/2000/svg","g")
+
+  gridGroup.setAttribute("opacity","0.12")
+
+  for(let x = 0; x <= width; x += spacing){
+
+    const line = document.createElementNS("http://www.w3.org/2000/svg","line")
+
+    line.setAttribute("x1", x)
+    line.setAttribute("y1", 0)
+
+    line.setAttribute("x2", x)
+    line.setAttribute("y2", height)
+
+    line.setAttribute("stroke","#8fa3b0")
+
+    gridGroup.appendChild(line)
+
+  }
+
+  for(let y = 0; y <= height; y += spacing){
+
+    const line = document.createElementNS("http://www.w3.org/2000/svg","line")
+
+    line.setAttribute("x1", 0)
+    line.setAttribute("y1", y)
+
+    line.setAttribute("x2", width)
+    line.setAttribute("y2", y)
+
+    line.setAttribute("stroke","#8fa3b0")
+
+    gridGroup.appendChild(line)
+
+  }
+
+  svg.appendChild(gridGroup)
 
 }
