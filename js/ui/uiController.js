@@ -5,37 +5,52 @@ import { renderRibTable } from "../renderer/ribTableRenderer.js"
 
 export function initUI(){
 
-const btn=document.getElementById("renderBtn")
+const btn = document.getElementById("renderBtn")
 
-if(!btn) return
-
-btn.addEventListener("click",handleRender)
+btn.addEventListener("click", handleRender)
 
 }
 
 function handleRender(){
 
-const wallType=document.getElementById("wallType").value
+const wallType = document.getElementById("wallType").value
 
-const config={
+const config = {
 
 wallType,
-wallLength:parseFloat(document.getElementById("wallLength").value)||0,
-gableHeight:parseFloat(document.getElementById("gableHeight").value)||0,
-ribSpacing:parseFloat(document.getElementById("ribSpacing").value)||12,
-panelCoverage:parseFloat(document.getElementById("panelCoverage").value)||36,
-startOffset:parseFloat(document.getElementById("offset").value)||0
+
+wallLength:
+parseFloat(document.getElementById("wallLength").value) || 0,
+
+eaveHeight:
+parseFloat(document.getElementById("eaveHeight").value) || 0,
+
+roofPitch:
+parseFloat(document.getElementById("roofPitch").value) || 0,
+
+ribSpacing:
+parseFloat(document.getElementById("ribSpacing").value) || 12,
+
+panelCoverage:
+parseFloat(document.getElementById("panelCoverage").value) || 36,
+
+startOffset:
+parseFloat(document.getElementById("offset").value) || 0
 
 }
 
-const model=generateLayout(config)
+const model = generateLayout(config)
 
-if(wallType==="sidewall"){
+if (wallType === "sidewall") {
+
 renderSvg(model)
+
 }
 
-if(wallType==="gable"){
+if (wallType === "gable") {
+
 renderGable(model)
+
 }
 
 renderRibTable(model)
