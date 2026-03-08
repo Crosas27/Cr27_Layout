@@ -1,73 +1,107 @@
+import { formatToField } from "../utils/formatter.js"
+
 export function renderGable(model){
 
-const svg=document.getElementById("wallSvg")
+const svg = document.getElementById("wallSvg")
 if(!svg) return
 
 svg.innerHTML=""
 
-const width=svg.clientWidth||900
-const height=300
+const width = svg.clientWidth || 900
+const height = 320
 
 svg.setAttribute("viewBox",`0 0 ${width} ${height}`)
 
-const {wallLength,gableHeight,ribs}=model
+const {
+wallLength,
+eaveHeight,
+peakHeight,
+ribs
+} = model
 
-const scale=width/wallLength
+const scaleX = width / wallLength
+const scaleY = 200 / peakHeight
 
-const baseY=240
-const peakX=(wallLength/2)*scale
-const peakY=baseY-gableHeight
+const baseY = 260
 
-/* GABLE SHAPE */
+/* WALL */
 
-const gable=document.createElementNS("http://www.w3.org/2000/svg","polygon")
+const wallHeight = eaveHeight * scaleY
 
-gable.setAttribute(
-"points",
-`0,${baseY} ${peakX},${peakY} ${wallLength*scale},${baseY}`
-)
+const wall = document.createElementNS("http://www.w3.org/2000/svg","rect")
 
-gable.setAttribute("fill","none")
-gable.setAttribute("stroke","#90A4AE")
-gable.setAttribute("stroke-width","2")
+wall.setAttribute("x",0)
+wall.setAttribute("y",baseY - wallHeight)
 
-svg.appendChild(gable)
+wall.setAttribute("width", wallLength * scaleX)
+wall.setAttribute("height", wallHeight)
+
+wall.setAttribute("class","wall-outline")
+
+svg.appendChild(wall)
 
 /* RIBS */
 
 ribs.forEach(rib=>{
 
-const x=rib.position*scale
+const x = rib.position * scaleX
 
-const slopeHeight=getRoofHeight(rib.position,wallLength,gableHeight)
-
-const yTop=baseY-slopeHeight
-
-const line=document.createElementNS("http://www.w3.org/2000/svg","line")
+const line = document.createElementNS("http://www.w3.org/2000/svg","line")
 
 line.setAttribute("x1",x)
 line.setAttribute("x2",x)
 
 line.setAttribute("y1",baseY)
-line.setAttribute("y2",yTop)
+line.setAttribute("y2",baseY - wallHeight)
 
-line.setAttribute("stroke","#4FC3F7")
-line.setAttribute("stroke-width","2")
+line.setAttribute("class","rib-line")
 
 svg.appendChild(line)
 
 })
 
-}
+/* ROOF LINES */
 
-function getRoofHeight(x,width,height){
+const peakX = (wallLength/2) * scaleX
+const peakY = baseY - (peakHeight * scaleY)
 
-const half=width/2
+const leftRoof = document.createElementNS("http://www.w3.org/2000/svg","line")
 
-if(x<=half){
-return (x/half)*height
-}else{
-return ((width-x)/half)*height
-}
+leftRoof.setAttribute("x1",0)
+leftRoof.setAttribute("y1",baseY - wallHeight)
+
+leftRoof.setAttribute("x2",peakX)
+leftRoof.setAttribute("y2",peakY)
+
+leftRoof.setAttribute("stroke","#90A4AE")
+leftRoof.setAttribute("stroke-width","2")
+
+svg.appendChild(leftRoof)
+
+const rightRoof = document.createElementNS("http://www.w3.org/2000/svg","line")
+
+rightRoof.setAttribute("x1",wallLength * scaleX)
+rightRoof.setAttribute("y1",baseY - wallHeight)
+
+rightRoof.setAttribute("x2",peakX)
+rightRoof.setAttribute("y2",peakY)
+
+rightRoof.setAttribute("stroke","#90A4AE")
+rightRoof.setAttribute("stroke-width","2")
+
+svg.appendChild(rightRoof)
+
+/* PEAK LABEL */
+
+const peakText = document.createElementNS("http://www.w3.org/2000/svg","text")
+
+peakText.setAttribute("x",peakX)
+peakText.setAttribute("y",peakY - 10)
+
+peakText.setAttribute("text-anchor","middle")
+
+peakText.textContent = formatToField(peakHeight)
+
+svg.appendChild(peakText)
 
 }
