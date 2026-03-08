@@ -24,7 +24,6 @@ peakHeight,
 
 ribs,
 panels,
-
 gableCuts
 
 }
@@ -36,14 +35,13 @@ gableCuts
 function calculatePeakHeight(width,eaveHeight,pitch){
 
 const halfSpan = width / 2
-
 const rise = (pitch / 12) * halfSpan
 
 return eaveHeight + rise
 
 }
 
-/* RIBS */
+/* RIB LAYOUT */
 
 function calculateRibs({wallLength,ribSpacing,startOffset}){
 
@@ -63,7 +61,7 @@ return ribs
 
 }
 
-/* PANELS */
+/* PANEL POSITIONS */
 
 function calculatePanels({wallLength,panelCoverage}){
 
@@ -88,53 +86,60 @@ return panels
 
 }
 
-/* GABLE CUTS */
+/* GABLE PANEL CUTS */
 
 function calculateGableCuts(width,eaveHeight,pitch,panelCoverage){
 
-const panels=[]
+const cuts=[]
 
-const half=width/2
-
-let position=0
+let start=0
 let index=1
 
-while(position<width){
+while(start < width){
 
-const center=position+(panelCoverage/2)
+const end=Math.min(start+panelCoverage,width)
 
-const height=getRoofHeight(center,width,eaveHeight,pitch)
+const leftHeight = getRoofHeight(start,width,eaveHeight,pitch)
+const rightHeight = getRoofHeight(end,width,eaveHeight,pitch)
 
-panels.push({
+cuts.push({
 
 panel:index,
-center,
-cutHeight:height
+start,
+end,
+leftHeight,
+rightHeight
 
 })
 
-position+=panelCoverage
+start+=panelCoverage
 index++
 
 }
 
-return panels
+return cuts
 
 }
 
-/* ROOF HEIGHT AT ANY POINT */
+/* ROOF HEIGHT */
 
 function getRoofHeight(x,width,eaveHeight,pitch){
 
 const half=width/2
+const slope=pitch/12
 
-const risePerInch=pitch/12
+let rise
 
-const distanceFromEdge =
-x <= half ? x : width - x
+if(x<=half){
 
-const rise = distanceFromEdge * risePerInch
+rise=x*slope
 
-return eaveHeight + rise
+}else{
+
+rise=(width-x)*slope
+
+}
+
+return eaveHeight+rise
 
 }
