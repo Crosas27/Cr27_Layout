@@ -13,19 +13,19 @@ html+="<strong>Rib Layout</strong><br>"
 
 model.ribs.forEach((rib,i)=>{
 
-html+=`• Rib ${i+1} — ${formatToField(rib.position)} (${rib.position}")<br>`
+html+=`• Rib ${i+1} — ${formatToField(rib.position)}<br>`
 
 })
-
-/* GABLE PANEL CUTS */
 
 if(model.wallType==="gable"){
 
 html+="<br><strong>Gable Panel Cuts</strong><br>"
 
-model.gableCuts.forEach(cut=>{
+model.gableCuts.forEach(panel=>{
 
-html+=`• Panel ${cut.panel} — Cut Height: ${formatToField(cut.cutHeight)}<br>`
+html+=`• Panel ${panel.panel} — 
+${formatToField(panel.leftHeight)} → 
+${formatToField(panel.rightHeight)}<br>`
 
 })
 
