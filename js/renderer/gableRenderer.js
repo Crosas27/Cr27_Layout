@@ -116,6 +116,7 @@ peakLabel.setAttribute("fill","#e6e6e6")
 peakLabel.textContent = formatToField(peakHeight)
 
 svg.appendChild(peakLabel)
+}
 
 function drawGrid(svg, width, height, spacing = 50){
 
