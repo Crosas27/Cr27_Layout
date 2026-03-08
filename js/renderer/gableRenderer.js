@@ -8,154 +8,168 @@ if(!svg) return
 svg.innerHTML = ""
 
 const width = svg.clientWidth || 900
-const height = 320
+const height = 340
 
 svg.setAttribute("viewBox", `0 0 ${width} ${height}`)
 
-drawGrid(svg, width, height)
+const margin = 40
 
-/* MARGINS */
-
-const marginTop = 40
-const marginBottom = 40
-const marginSide = 40
-
-/* AVAILABLE DRAW AREA */
-
-const drawWidth = width - (marginSide * 2)
-const drawHeight = height - (marginTop + marginBottom)
-
-/* MODEL VALUES */
+const drawWidth = width - margin*2
+const drawHeight = height - margin*2
 
 const {
 wallLength,
 eaveHeight,
-peakHeight
+peakHeight,
+panels,
+ribs,
+gableCuts
 } = model
-
-/* SCALE */
 
 const scaleX = drawWidth / wallLength
 const scaleY = drawHeight / peakHeight
 
-/* BASELINE */
+const baseY = height - margin
 
-const baseY = height - marginBottom
+/* --------------------------- */
+/* WALL BASE LINE              */
+/* --------------------------- */
 
-/* WALL HEIGHT */
+const wallTop = baseY - (eaveHeight * scaleY)
 
-const wallHeight = eaveHeight * scaleY
+const wall = document.createElementNS("http://www.w3.org/2000/svg","line")
 
-/* WALL LEFT */
-
-const wallLeft = marginSide
-
-/* WALL RIGHT */
-
-const wallRight = marginSide + (wallLength * scaleX)
-
-/* DRAW WALL */
-
-const wall = document.createElementNS("http://www.w3.org/2000/svg","rect")
-
-wall.setAttribute("x", wallLeft)
-wall.setAttribute("y", baseY - wallHeight)
-
-wall.setAttribute("width", wallLength * scaleX)
-wall.setAttribute("height", wallHeight)
+wall.setAttribute("x1", margin)
+wall.setAttribute("x2", margin + wallLength*scaleX)
+wall.setAttribute("y1", wallTop)
+wall.setAttribute("y2", wallTop)
 
 wall.setAttribute("class","wall-outline")
 
 svg.appendChild(wall)
 
-/* ROOF PEAK */
 
-const peakX = wallLeft + (wallLength * scaleX) / 2
-const peakY = baseY - (peakHeight * scaleY)
+/* --------------------------- */
+/* ROOF LINES                  */
+/* --------------------------- */
 
-/* LEFT ROOF */
+const peakX = margin + (wallLength*scaleX)/2
+const peakY = baseY - (peakHeight*scaleY)
 
 const leftRoof = document.createElementNS("http://www.w3.org/2000/svg","line")
 
-leftRoof.setAttribute("x1", wallLeft)
-leftRoof.setAttribute("y1", baseY - wallHeight)
+leftRoof.setAttribute("x1",margin)
+leftRoof.setAttribute("y1",wallTop)
+leftRoof.setAttribute("x2",peakX)
+leftRoof.setAttribute("y2",peakY)
 
-leftRoof.setAttribute("x2", peakX)
-leftRoof.setAttribute("y2", peakY)
-
-leftRoof.setAttribute("stroke","#90A4AE")
-leftRoof.setAttribute("stroke-width","2")
+leftRoof.setAttribute("class","roof-line")
 
 svg.appendChild(leftRoof)
 
-/* RIGHT ROOF */
-
 const rightRoof = document.createElementNS("http://www.w3.org/2000/svg","line")
 
-rightRoof.setAttribute("x1", wallRight)
-rightRoof.setAttribute("y1", baseY - wallHeight)
+rightRoof.setAttribute("x1",margin + wallLength*scaleX)
+rightRoof.setAttribute("y1",wallTop)
+rightRoof.setAttribute("x2",peakX)
+rightRoof.setAttribute("y2",peakY)
 
-rightRoof.setAttribute("x2", peakX)
-rightRoof.setAttribute("y2", peakY)
-
-rightRoof.setAttribute("stroke","#90A4AE")
-rightRoof.setAttribute("stroke-width","2")
+rightRoof.setAttribute("class","roof-line")
 
 svg.appendChild(rightRoof)
 
-/* PEAK LABEL */
 
-const peakLabel = document.createElementNS("http://www.w3.org/2000/svg","text")
+/* --------------------------- */
+/* PANEL SEGMENTATION          */
+/* --------------------------- */
 
-peakLabel.setAttribute("x", peakX)
-peakLabel.setAttribute("y", peakY - 10)
+panels.forEach((panel,i)=>{
 
-peakLabel.setAttribute("text-anchor","middle")
-peakLabel.setAttribute("fill","#e6e6e6")
+const x = margin + panel.start*scaleX
 
-peakLabel.textContent = formatToField(peakHeight)
+const line = document.createElementNS("http://www.w3.org/2000/svg","line")
 
-svg.appendChild(peakLabel)
-}
+line.setAttribute("x1",x)
+line.setAttribute("x2",x)
+line.setAttribute("y1",wallTop)
+line.setAttribute("y2",baseY)
 
-function drawGrid(svg, width, height, spacing = 40){
+line.setAttribute("class","panel-seam")
 
-const gridGroup = document.createElementNS("http://www.w3.org/2000/svg","g")
+svg.appendChild(line)
 
-  gridGroup.setAttribute("opacity","0.12")
+})
 
-  for(let x = 0; x <= width; x += spacing){
 
-    const line = document.createElementNS("http://www.w3.org/2000/svg","line")
+/* --------------------------- */
+/* RIB ALIGNMENT               */
+/* --------------------------- */
 
-    line.setAttribute("x1", x)
-    line.setAttribute("y1", 0)
+ribs.forEach(rib=>{
 
-    line.setAttribute("x2", x)
-    line.setAttribute("y2", height)
+const x = margin + rib.position*scaleX
 
-    line.setAttribute("stroke","#8fa3b0")
+const line = document.createElementNS("http://www.w3.org/2000/svg","line")
 
-    gridGroup.appendChild(line)
+line.setAttribute("x1",x)
+line.setAttribute("x2",x)
+line.setAttribute("y1",wallTop)
+line.setAttribute("y2",baseY)
 
-  }
+line.setAttribute("class","rib-line")
 
-  for(let y = 0; y <= height; y += spacing){
+svg.appendChild(line)
 
-    const line = document.createElementNS("http://www.w3.org/2000/svg","line")
+})
 
-    line.setAttribute("x1", 0)
-    line.setAttribute("y1", y)
 
-    line.setAttribute("x2", width)
-    line.setAttribute("y2", y)
+/* --------------------------- */
+/* GABLE CUT VISUALIZATION     */
+/* --------------------------- */
 
-    line.setAttribute("stroke","#8fa3b0")
+gableCuts.forEach(cut=>{
 
-    gridGroup.appendChild(line)
+const startX = margin + cut.start*scaleX
+const endX = margin + cut.end*scaleX
 
-  }
+const leftY = baseY - (cut.leftHeight*scaleY)
+const rightY = baseY - (cut.rightHeight*scaleY)
 
-  svg.appendChild(gridGroup)
+const poly = document.createElementNS("http://www.w3.org/2000/svg","polygon")
+
+poly.setAttribute(
+"points",
+`${startX},${baseY} ${startX},${leftY} ${endX},${rightY} ${endX},${baseY}`
+)
+
+poly.setAttribute("fill","rgba(120,150,180,0.15)")
+
+svg.appendChild(poly)
+
+})
+
+
+/* --------------------------- */
+/* CUT MEASUREMENTS            */
+/* --------------------------- */
+
+gableCuts.forEach(cut=>{
+
+const midX = margin + ((cut.start + cut.end)/2)*scaleX
+
+const text = document.createElementNS("http://www.w3.org/2000/svg","text")
+
+text.setAttribute("x",midX)
+text.setAttribute("y",baseY+18)
+
+text.setAttribute("text-anchor","middle")
+text.setAttribute("class","dimension-text")
+
+text.textContent =
+`${formatToField(cut.leftHeight)} → ${formatToField(cut.rightHeight)}`
+
+svg.appendChild(text)
+
+})
 
 }
