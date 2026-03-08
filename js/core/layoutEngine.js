@@ -9,6 +9,13 @@ config.eaveHeight,
 config.roofPitch
 )
 
+const gableCuts = calculateGableCuts(
+config.wallLength,
+config.eaveHeight,
+config.roofPitch,
+config.panelCoverage
+)
+
 return {
 
 ...config,
@@ -16,13 +23,17 @@ return {
 peakHeight,
 
 ribs,
-panels
+panels,
+
+gableCuts
 
 }
 
 }
 
-function calculatePeakHeight(width, eaveHeight, pitch){
+/* PEAK HEIGHT */
+
+function calculatePeakHeight(width,eaveHeight,pitch){
 
 const halfSpan = width / 2
 
@@ -32,17 +43,19 @@ return eaveHeight + rise
 
 }
 
-function calculateRibs({wallLength, ribSpacing, startOffset}){
+/* RIBS */
 
-const ribs = []
+function calculateRibs({wallLength,ribSpacing,startOffset}){
 
-let position = startOffset
+const ribs=[]
 
-while (position <= wallLength){
+let position=startOffset
+
+while(position<=wallLength){
 
 ribs.push({position})
 
-position += ribSpacing
+position+=ribSpacing
 
 }
 
@@ -50,25 +63,78 @@ return ribs
 
 }
 
-function calculatePanels({wallLength, panelCoverage}){
+/* PANELS */
 
-const panels = []
+function calculatePanels({wallLength,panelCoverage}){
 
-let position = 0
+const panels=[]
 
-while(position < wallLength){
+let position=0
+
+while(position<wallLength){
 
 panels.push({
 
-start: position,
-end: Math.min(position + panelCoverage, wallLength)
+start:position,
+end:Math.min(position+panelCoverage,wallLength)
 
 })
 
-position += panelCoverage
+position+=panelCoverage
 
 }
 
 return panels
+
+}
+
+/* GABLE CUTS */
+
+function calculateGableCuts(width,eaveHeight,pitch,panelCoverage){
+
+const panels=[]
+
+const half=width/2
+
+let position=0
+let index=1
+
+while(position<width){
+
+const center=position+(panelCoverage/2)
+
+const height=getRoofHeight(center,width,eaveHeight,pitch)
+
+panels.push({
+
+panel:index,
+center,
+cutHeight:height
+
+})
+
+position+=panelCoverage
+index++
+
+}
+
+return panels
+
+}
+
+/* ROOF HEIGHT AT ANY POINT */
+
+function getRoofHeight(x,width,eaveHeight,pitch){
+
+const half=width/2
+
+const risePerInch=pitch/12
+
+const distanceFromEdge =
+x <= half ? x : width - x
+
+const rise = distanceFromEdge * risePerInch
+
+return eaveHeight + rise
 
 }
