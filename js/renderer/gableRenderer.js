@@ -118,9 +118,9 @@ peakLabel.textContent = formatToField(peakHeight)
 svg.appendChild(peakLabel)
 }
 
-function drawGrid(svg, width, height, spacing = 50){
+function drawGrid(svg, width, height, spacing = 40){
 
-  const gridGroup = document.createElementNS("http://www.w3.org/2000/svg","g")
+const gridGroup = document.createElementNS("http://www.w3.org/2000/svg","g")
 
   gridGroup.setAttribute("opacity","0.12")
 
