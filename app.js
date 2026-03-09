@@ -1,4 +1,4 @@
-import { initUI } from "./ui/uiController.js"
+import { initUI } from "../ui/uiController.js"
 
 document.addEventListener("DOMContentLoaded",()=>{
 
