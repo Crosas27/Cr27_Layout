@@ -60,22 +60,23 @@ drawLine(svg,x,baseY,x,y,"panel-line")
 
 gableCuts.forEach(panel=>{
 
-const startX=wallLeft + panel.start*scale
-const endX=wallLeft + panel.end*scale
+const startX = wallLeft + panel.start * scale
+const endX = wallLeft + panel.end * scale
 
-const midX=(startX+endX)/2
+const midX = (startX + endX) / 2
+
+const roofHeight = Math.max(panel.leftHeight, panel.rightHeight)
+const labelY = baseY - roofHeight * scale - 16
 
 drawText(
 svg,
 midX,
-const roofHeight = Math.max(panel.leftHeight, panel.rightHeight)
-const labelY = baseY - roofHeight * scale - 16,
-  
+labelY,
 `${formatToField(panel.leftHeight)} → ${formatToField(panel.rightHeight)}`
 )
 
 })
-
+  
 /* PEAK LABEL */
 
 drawText(svg,peakX,peakY-12,formatToField(peakHeight))
