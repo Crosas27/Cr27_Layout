@@ -10,7 +10,6 @@ drawText
 } from "../utils/svgUtils.js"
 
 export function renderGable(model){
-console.log(model.gableCuts)
 
 const svg = document.getElementById("wallSvg")
 if(!svg) return
