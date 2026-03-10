@@ -36,6 +36,14 @@ const peakY=baseY - peakHeight*scale
 const leftTopY=baseY - eaveHeight*scale
 const rightTopY=leftTopY
 
+/* WALL */
+
+drawLine(svg,wallLeft,baseY,wallLeft,leftTopY,"wall-line")
+
+drawLine(svg,wallLeft+wallLength*scale,baseY,wallLeft+wallLength*scale,leftTopY,"wall-line")
+
+drawLine(svg,wallLeft,baseY,wallLeft+wallLength*scale,baseY,"wall-line")
+
 /* ROOF */
 
 drawLine(svg,wallLeft,leftTopY,peakX,peakY,"roof-line")
@@ -48,7 +56,7 @@ gableCuts.forEach(panel=>{
 
 const x=wallLeft + panel.start*scale
 
-const roofHeight = panel.leftheight
+const roofHeight = Math.max(panel.leftheight, panel.rightHeight)
 
 const y = baseY - roofHeight * scale
 
@@ -66,7 +74,7 @@ const endX = wallLeft + panel.end * scale
 const midX = (startX + endX) / 2
 
 const roofHeight = Math.max(panel.leftHeight, panel.rightHeight)
-const labelY = baseY - roofHeight * scale - 16
+const labelY = baseY - roofHeight * scale - 14
 
 drawText(
 svg,
