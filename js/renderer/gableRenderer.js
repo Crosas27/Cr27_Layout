@@ -1,3 +1,4 @@
+console.log(model.gableCuts)
 import { formatToField } from "../utils/formatter.js"
 
 import {
