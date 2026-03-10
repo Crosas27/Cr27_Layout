@@ -158,8 +158,26 @@ return label
 
 export function drawDimension(svg,x1,x2,y,text){
 
+/* main dimension line */
+
 drawLine(svg,x1,y,x2,y,"dimension-line")
 
-drawText(svg,(x1+x2)/2,y-6,text,"dimension-text")
+/* left tick */
+
+drawLine(svg,x1,y-6,x1,y+6,"dimension-line")
+
+/* right tick */
+
+drawLine(svg,x2,y-6,x2,y+6,"dimension-line")
+
+/* label */
+
+drawText(
+svg,
+(x1+x2)/2,
+y-8,
+text,
+"dimension-text"
+)
 
 }
