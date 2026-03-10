@@ -103,16 +103,16 @@ fill:none;
 
 .panel-seam{
 
-stroke:#888;
-stroke-width:2;
+stroke:#90A4AE;
+stroke-width:1.5;
 
 }
 
 .rib-line{
 
 stroke:#00e676;
-stroke-width:2;
-stroke-dasharray:4;
+stroke-width:1.5;
+stroke-dasharray:4 4;
 
 }
 
