@@ -48,7 +48,7 @@ gableCuts.forEach(panel=>{
 
 const x=wallLeft + panel.start*scale
 
-const roofHeight = getRoofHeight(panel.start)
+const roofHeight = panel.leftheight
 
 const y = baseY - roofHeight * scale
 
