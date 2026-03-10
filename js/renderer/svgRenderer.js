@@ -66,7 +66,18 @@ const x=margin + rib.position*scale
 
 drawLine(svg,x,wallTop,x,wallTop+wallHeight,"rib-line")
 
-drawText(svg,x,wallTop+wallHeight+16,formatToField(rib.position))
+/* only label every 3 feet */
+
+if(rib.position % 36 === 0){
+
+drawText(
+svg,
+x,
+wallTop+wallHeight+18,
+formatToField(rib.position)
+)
+
+}
 
 })
 
