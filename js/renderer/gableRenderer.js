@@ -8,167 +8,128 @@ if(!svg) return
 svg.innerHTML = ""
 
 const width = svg.clientWidth || 900
-const height = 340
+const height = 320
 
 svg.setAttribute("viewBox", `0 0 ${width} ${height}`)
 
+/* MODEL */
+
+const { wallLength, eaveHeight, peakHeight, gableCuts } = model
+
+/* MARGINS */
+
 const margin = 40
+const drawWidth = width - margin * 2
+const drawHeight = height - margin * 2
 
-const drawWidth = width - margin*2
-const drawHeight = height - margin*2
-
-const {
-wallLength,
-eaveHeight,
-peakHeight,
-panels,
-ribs,
-gableCuts
-} = model
+/* SCALE */
 
 const scaleX = drawWidth / wallLength
 const scaleY = drawHeight / peakHeight
 
+/* BASELINE */
+
 const baseY = height - margin
 
-/* --------------------------- */
-/* WALL BASE LINE              */
-/* --------------------------- */
+/* WALL LEFT */
 
-const wallTop = baseY - (eaveHeight * scaleY)
+const wallLeft = margin
 
-const wall = document.createElementNS("http://www.w3.org/2000/svg","line")
+/* PEAK */
 
-wall.setAttribute("x1", margin)
-wall.setAttribute("x2", margin + wallLength*scaleX)
-wall.setAttribute("y1", wallTop)
-wall.setAttribute("y2", wallTop)
+const peakX = wallLeft + (wallLength * scaleX) / 2
+const peakY = baseY - (peakHeight * scaleY)
 
-wall.setAttribute("class","wall-outline")
-
-svg.appendChild(wall)
-
-
-/* --------------------------- */
-/* ROOF LINES                  */
-/* --------------------------- */
-
-const peakX = margin + (wallLength*scaleX)/2
-const peakY = baseY - (peakHeight*scaleY)
+/* DRAW ROOF */
 
 const leftRoof = document.createElementNS("http://www.w3.org/2000/svg","line")
 
-leftRoof.setAttribute("x1",margin)
-leftRoof.setAttribute("y1",wallTop)
-leftRoof.setAttribute("x2",peakX)
-leftRoof.setAttribute("y2",peakY)
+leftRoof.setAttribute("x1", wallLeft)
+leftRoof.setAttribute("y1", baseY - (eaveHeight * scaleY))
+leftRoof.setAttribute("x2", peakX)
+leftRoof.setAttribute("y2", peakY)
 
-leftRoof.setAttribute("class","roof-line")
+leftRoof.setAttribute("class","wall-outline")
 
 svg.appendChild(leftRoof)
 
 const rightRoof = document.createElementNS("http://www.w3.org/2000/svg","line")
 
-rightRoof.setAttribute("x1",margin + wallLength*scaleX)
-rightRoof.setAttribute("y1",wallTop)
-rightRoof.setAttribute("x2",peakX)
-rightRoof.setAttribute("y2",peakY)
+rightRoof.setAttribute("x1", wallLeft + wallLength * scaleX)
+rightRoof.setAttribute("y1", baseY - (eaveHeight * scaleY))
+rightRoof.setAttribute("x2", peakX)
+rightRoof.setAttribute("y2", peakY)
 
-rightRoof.setAttribute("class","roof-line")
+rightRoof.setAttribute("class","wall-outline")
 
 svg.appendChild(rightRoof)
 
+/* DRAW PANELS */
 
-/* --------------------------- */
-/* PANEL SEGMENTATION          */
-/* --------------------------- */
+gableCuts.forEach(panel => {
 
-panels.forEach((panel,i)=>{
+const startX = wallLeft + panel.start * scaleX
+const endX = wallLeft + panel.end * scaleX
 
-const x = margin + panel.start*scaleX
+const leftY = baseY - (panel.leftHeight * scaleY)
+const rightY = baseY - (panel.rightHeight * scaleY)
 
-const line = document.createElementNS("http://www.w3.org/2000/svg","line")
+/* PANEL CUT LINE */
 
-line.setAttribute("x1",x)
-line.setAttribute("x2",x)
-line.setAttribute("y1",wallTop)
-line.setAttribute("y2",baseY)
+const cut = document.createElementNS("http://www.w3.org/2000/svg","line")
 
-line.setAttribute("class","panel-seam")
+cut.setAttribute("x1", startX)
+cut.setAttribute("y1", leftY)
 
-svg.appendChild(line)
+cut.setAttribute("x2", endX)
+cut.setAttribute("y2", rightY)
 
-})
+cut.setAttribute("stroke","#4FC3F7")
+cut.setAttribute("stroke-width","2")
 
+svg.appendChild(cut)
 
-/* --------------------------- */
-/* RIB ALIGNMENT               */
-/* --------------------------- */
+/* PANEL SIDES */
 
-ribs.forEach(rib=>{
+const leftEdge = document.createElementNS("http://www.w3.org/2000/svg","line")
 
-const x = margin + rib.position*scaleX
+leftEdge.setAttribute("x1", startX)
+leftEdge.setAttribute("x2", startX)
 
-const line = document.createElementNS("http://www.w3.org/2000/svg","line")
+leftEdge.setAttribute("y1", baseY)
+leftEdge.setAttribute("y2", leftY)
 
-line.setAttribute("x1",x)
-line.setAttribute("x2",x)
-line.setAttribute("y1",wallTop)
-line.setAttribute("y2",baseY)
+leftEdge.setAttribute("class","rib-line")
 
-line.setAttribute("class","rib-line")
+svg.appendChild(leftEdge)
 
-svg.appendChild(line)
+const rightEdge = document.createElementNS("http://www.w3.org/2000/svg","line")
 
-})
+rightEdge.setAttribute("x1", endX)
+rightEdge.setAttribute("x2", endX)
 
+rightEdge.setAttribute("y1", baseY)
+rightEdge.setAttribute("y2", rightY)
 
-/* --------------------------- */
-/* GABLE CUT VISUALIZATION     */
-/* --------------------------- */
+rightEdge.setAttribute("class","rib-line")
 
-gableCuts.forEach(cut=>{
+svg.appendChild(rightEdge)
 
-const startX = margin + cut.start*scaleX
-const endX = margin + cut.end*scaleX
+/* LABEL */
 
-const leftY = baseY - (cut.leftHeight*scaleY)
-const rightY = baseY - (cut.rightHeight*scaleY)
+const label = document.createElementNS("http://www.w3.org/2000/svg","text")
 
-const poly = document.createElementNS("http://www.w3.org/2000/svg","polygon")
+label.setAttribute("x", (startX + endX) / 2)
+label.setAttribute("y", Math.min(leftY,rightY) - 8)
 
-poly.setAttribute(
-"points",
-`${startX},${baseY} ${startX},${leftY} ${endX},${rightY} ${endX},${baseY}`
-)
+label.setAttribute("text-anchor","middle")
+label.setAttribute("fill","#e6e6e6")
+label.setAttribute("font-size","10")
 
-poly.setAttribute("fill","rgba(120,150,180,0.15)")
+label.textContent =
+`${formatToField(panel.leftHeight)} → ${formatToField(panel.rightHeight)}`
 
-svg.appendChild(poly)
-
-})
-
-
-/* --------------------------- */
-/* CUT MEASUREMENTS            */
-/* --------------------------- */
-
-gableCuts.forEach(cut=>{
-
-const midX = margin + ((cut.start + cut.end)/2)*scaleX
-
-const text = document.createElementNS("http://www.w3.org/2000/svg","text")
-
-text.setAttribute("x",midX)
-text.setAttribute("y",baseY+18)
-
-text.setAttribute("text-anchor","middle")
-text.setAttribute("class","dimension-text")
-
-text.textContent =
-`${formatToField(cut.leftHeight)} → ${formatToField(cut.rightHeight)}`
-
-svg.appendChild(text)
+svg.appendChild(label)
 
 })
 
