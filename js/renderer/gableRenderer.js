@@ -1,4 +1,3 @@
-console.log(model.gableCuts)
 import { formatToField } from "../utils/formatter.js"
 
 import {
@@ -11,6 +10,7 @@ drawText
 } from "../utils/svgUtils.js"
 
 export function renderGable(model){
+console.log(model.gableCuts)
 
 const svg = document.getElementById("wallSvg")
 if(!svg) return
