@@ -11,52 +11,67 @@ drawText
 
 export function renderGable(model){
 
-const svg=document.getElementById("wallSvg")
+const svg = document.getElementById("wallSvg")
 if(!svg) return
 
-const width=svg.clientWidth||900
-const height=360
+const width = svg.clientWidth || 900
+const height = 360
 
 setupSvg(svg,width,height)
 
 drawGrid(svg,width,height)
 
-const {margin,drawWidth,drawHeight}=getDrawArea(width,height)
+const {margin,drawWidth,drawHeight} = getDrawArea(width,height)
 
-const {wallLength,eaveHeight,peakHeight,gableCuts}=model
+const {wallLength,eaveHeight,peakHeight,gableCuts} = model
 
-const scale=calculateScale(drawWidth,drawHeight,wallLength,peakHeight)
+if(!wallLength || !peakHeight) return
 
-const baseY=height-margin
-const wallLeft=margin
+/* SCALE */
 
-const peakX=wallLeft + (wallLength*scale)/2
-const peakY=baseY - peakHeight*scale
+const scale = calculateScale(drawWidth,drawHeight,wallLength,peakHeight)
 
-const leftTopY=baseY - eaveHeight*scale
-const rightTopY=leftTopY
+/* BASELINE */
 
-/* WALL */
+const baseY = height - margin
+const wallLeft = margin
+const wallRight = wallLeft + wallLength * scale
+
+/* ROOF POINTS */
+
+const peakX = wallLeft + (wallLength * scale) / 2
+const peakY = baseY - peakHeight * scale
+
+const leftTopY = baseY - eaveHeight * scale
+const rightTopY = leftTopY
+
+/* --------------------- */
+/* WALL OUTLINE */
+/* --------------------- */
 
 drawLine(svg,wallLeft,baseY,wallLeft,leftTopY,"wall-line")
 
-drawLine(svg,wallLeft+wallLength*scale,baseY,wallLeft+wallLength*scale,leftTopY,"wall-line")
+drawLine(svg,wallRight,baseY,wallRight,rightTopY,"wall-line")
 
-drawLine(svg,wallLeft,baseY,wallLeft+wallLength*scale,baseY,"wall-line")
+drawLine(svg,wallLeft,baseY,wallRight,baseY,"wall-line")
 
-/* ROOF */
+/* --------------------- */
+/* ROOF LINES */
+/* --------------------- */
 
 drawLine(svg,wallLeft,leftTopY,peakX,peakY,"roof-line")
 
-drawLine(svg,wallLeft+wallLength*scale,rightTopY,peakX,peakY,"roof-line")
+drawLine(svg,wallRight,rightTopY,peakX,peakY,"roof-line")
 
-/* PANELS */
+/* --------------------- */
+/* PANEL SEAMS */
+/* --------------------- */
 
 gableCuts.forEach(panel=>{
 
-const x=wallLeft + panel.start*scale
+const x = wallLeft + panel.start * scale
 
-const roofHeight = Math.max(panel.leftheight, panel.rightHeight)
+const roofHeight = Math.max(panel.leftHeight,panel.rightHeight)
 
 const y = baseY - roofHeight * scale
 
@@ -64,7 +79,9 @@ drawLine(svg,x,baseY,x,y,"panel-line")
 
 })
 
+/* --------------------- */
 /* PANEL CUT LABELS */
+/* --------------------- */
 
 gableCuts.forEach(panel=>{
 
@@ -73,7 +90,8 @@ const endX = wallLeft + panel.end * scale
 
 const midX = (startX + endX) / 2
 
-const roofHeight = Math.max(panel.leftHeight, panel.rightHeight)
+const roofHeight = Math.max(panel.leftHeight,panel.rightHeight)
+
 const labelY = baseY - roofHeight * scale - 14
 
 drawText(
@@ -84,9 +102,16 @@ labelY,
 )
 
 })
-  
-/* PEAK LABEL */
 
-drawText(svg,peakX,peakY-12,formatToField(peakHeight))
+/* --------------------- */
+/* PEAK LABEL */
+/* --------------------- */
+
+drawText(
+svg,
+peakX,
+peakY - 12,
+formatToField(peakHeight)
+)
 
 }
