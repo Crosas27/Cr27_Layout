@@ -45,43 +45,35 @@ const peakY = baseY - peakHeight * scale
 const leftTopY = baseY - eaveHeight * scale
 const rightTopY = leftTopY
 
-/* --------------------- */
-/* WALL OUTLINE */
-/* --------------------- */
-
-drawLine(svg,wallLeft,baseY,wallLeft,leftTopY,"wall-line")
-
-drawLine(svg,wallRight,baseY,wallRight,rightTopY,"wall-line")
+/* WALL BASE */
 
 drawLine(svg,wallLeft,baseY,wallRight,baseY,"wall-line")
 
-/* --------------------- */
-/* ROOF LINES */
-/* --------------------- */
+/* WALL SIDES */
+
+drawLine(svg,wallLeft,baseY,wallLeft,leftTopY,"wall-line")
+drawLine(svg,wallRight,baseY,wallRight,rightTopY,"wall-line")
+
+/* ROOF */
 
 drawLine(svg,wallLeft,leftTopY,peakX,peakY,"roof-line")
-
 drawLine(svg,wallRight,rightTopY,peakX,peakY,"roof-line")
 
-/* --------------------- */
 /* PANEL SEAMS */
-/* --------------------- */
 
 gableCuts.forEach(panel=>{
 
 const x = wallLeft + panel.start * scale
 
-const roofHeight = Math.max(panel.leftHeight,panel.rightHeight)
+const seamHeight = Math.max(panel.leftHeight,panel.rightHeight)
 
-const y = baseY - roofHeight * scale
+const seamTop = baseY - seamHeight * scale
 
-drawLine(svg,x,baseY,x,y,"panel-line")
+drawLine(svg,x,baseY,x,seamTop,"panel-line")
 
 })
 
-/* --------------------- */
-/* PANEL CUT LABELS */
-/* --------------------- */
+/* PANEL LABELS */
 
 gableCuts.forEach(panel=>{
 
@@ -90,9 +82,9 @@ const endX = wallLeft + panel.end * scale
 
 const midX = (startX + endX) / 2
 
-const roofHeight = Math.max(panel.leftHeight,panel.rightHeight)
+const seamHeight = Math.max(panel.leftHeight,panel.rightHeight)
 
-const labelY = baseY - roofHeight * scale - 14
+const labelY = baseY - seamHeight * scale - 14
 
 drawText(
 svg,
@@ -103,9 +95,7 @@ labelY,
 
 })
 
-/* --------------------- */
 /* PEAK LABEL */
-/* --------------------- */
 
 drawText(
 svg,
